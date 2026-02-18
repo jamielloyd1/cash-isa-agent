@@ -1,0 +1,238 @@
+REPOSITORIES FOLDER - SIMPLE EXPLANATION
+=========================================
+
+WHAT ARE REPOSITORIES?
+
+Repositories are the only code that talks to data storage.
+
+They answer questions like:
+  "Where is the data?"
+  "How do I fetch it?"
+  "Is it CSV, Firestore, SQL, or something else?"
+
+And nothing else.
+
+
+WHY DO REPOSITORIES EXIST?
+
+Without repositories:
+  - Services know about CSV files
+  - Tools know about Firestore
+  - Agents pass raw dictionaries around
+  - Changing storage breaks everything
+
+With repositories:
+  - One place talks to storage
+  - Everything else uses repositories
+  - Swap CSV for Firestore? Change one file.
+  - No other code breaks
+
+
+KEY RULE FOR REPOSITORIES
+
+Repositories only fetch data. They don't care if:
+  ❌ A user is eligible
+  ❌ A policy makes sense
+  ❌ Business rules apply
+
+They just fetch and return raw data.
+
+
+REPOSITORIES IN THIS PROJECT
+
+repositories/user_repository.py
+  Responsibilities:
+    - Fetch user records from storage
+    - Return raw user data
+  
+  Example method:
+    def get_user_by_id(user_id: str) -> dict
+    
+  Today:  Reads from CSV
+  Tomorrow: Reads from Firestore or SQL
+  Everything else stays the same
+
+
+repositories/policy_repository.py
+  Responsibilities:
+    - Fetch policy data from storage
+    - Handle versioning if needed
+  
+  Example method:
+    def get_current_cash_isa_policy() -> dict
+  
+  Purpose: One place for policy facts
+
+
+WHAT REPOSITORIES DO NOT DO
+
+❌ Validate data
+❌ Check business rules
+❌ Know about eligibility
+❌ Know about MCP or tools
+❌ Perform calculations
+❌ Enforce constraints
+
+Repositories just fetch.
+
+
+EXAMPLE: user_repository.py (COMPLETE DUMMY)
+=============================================
+
+import csv
+from pathlib import Path
+from typing import Optional, Dict, Any
+
+class UserRepository:
+    """
+    Handles fetching user data from storage.
+    Today: CSV files
+    Tomorrow: Firestore, SQL, etc. (nothing else changes)
+    """
+    
+    def __init__(self, data_folder: Path = Path("data/users")):
+        self.data_folder = data_folder
+    
+    def get_user_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Fetch a single user by ID from CSV.
+        Returns raw data dict or None if not found.
+        """
+        csv_path = self.data_folder / "users.csv"
+        
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row['user_id'] == user_id:
+                    # Convert to proper types
+                    return {
+                        'user_id': row['user_id'],
+                        'first_name': row['first_name'],
+                        'last_name': row['last_name'],
+                        'age': int(row['age']),
+                        'email': row['email'],
+                        'cash_isa_contributions_ytd': float(row['cash_isa_contributions_ytd'])
+                    }
+        return None
+    
+    def get_all_users(self) -> list[Dict[str, Any]]:
+        """
+        Fetch all users from CSV.
+        Returns list of raw data dicts.
+        """
+        csv_path = self.data_folder / "users.csv"
+        users = []
+        
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                users.append({
+                    'user_id': row['user_id'],
+                    'first_name': row['first_name'],
+                    'last_name': row['last_name'],
+                    'age': int(row['age']),
+                    'email': row['email'],
+                    'cash_isa_contributions_ytd': float(row['cash_isa_contributions_ytd'])
+                })
+        return users
+
+
+# EXAMPLE USAGE (Don't do this in real code — services use repositories)
+
+repo = UserRepository()
+
+# Fetch one user
+user_data = repo.get_user_by_id("USR-123456")
+print(user_data)
+# Output: 
+# {
+#   'user_id': 'USR-123456',
+#   'first_name': 'John',
+#   'last_name': 'Smith',
+#   'age': 35,
+#   'email': 'john.smith@example.com',
+#   'cash_isa_contributions_ytd': 5000.0
+# }
+
+# Fetch all users
+all_users = repo.get_all_users()
+print(f"Found {len(all_users)} users")
+
+
+EXAMPLE: policy_repository.py (COMPLETE DUMMY)
+==============================================
+
+from typing import Dict, Any
+
+class PolicyRepository:
+    """
+    Handles fetching Cash ISA policy data from storage.
+    """
+    
+    def __init__(self):
+        # In real code, this might connect to Firestore/SQL
+        # For now, hardcoded
+        pass
+    
+    def get_current_cash_isa_policy(self) -> Dict[str, Any]:
+        """
+        Fetch the current Cash ISA policy rules.
+        Returns raw policy data dict.
+        """
+        return {
+            'policy_id': 'CASH-ISA-2026',
+            'annual_allowance': 20000.0,
+            'minimum_age': 18,
+            'maximum_age': None,  # No upper limit
+            'tax_year_start': '2026-04-06',
+            'tax_year_end': '2027-04-05',
+            'interest_rate': 5.5,
+            'version': '1.0'
+        }
+    
+    def get_policy_by_version(self, version: str) -> Dict[str, Any]:
+        """
+        Fetch a specific policy version by version number.
+        Returns raw policy data dict.
+        """
+        # In real code, would query database
+        if version == '1.0':
+            return self.get_current_cash_isa_policy()
+        else:
+            # Older version
+            return {
+                'policy_id': 'CASH-ISA-2025',
+                'annual_allowance': 20000.0,
+                'minimum_age': 18,
+                'maximum_age': None,
+                'tax_year_start': '2025-04-06',
+                'tax_year_end': '2026-04-05',
+                'interest_rate': 4.5,
+                'version': '0.9'
+            }
+
+
+# EXAMPLE USAGE
+
+policy_repo = PolicyRepository()
+
+# Get current policy
+policy = policy_repo.get_current_cash_isa_policy()
+print(f"Current annual allowance: £{policy['annual_allowance']}")
+# Output: Current annual allowance: £20000.0
+
+# Get old policy
+old_policy = policy_repo.get_policy_by_version('0.9')
+print(f"Old interest rate was: {old_policy['interest_rate']}%")
+# Output: Old interest rate was: 4.5%
+
+
+THAT'S IT.
+
+Repositories:
+  ✓ Connect to storage
+  ✓ Fetch raw data
+  ✓ Return dicts or lists
+  ✓ Nothing else
+
+No models, no business logic, no MCP knowledge.

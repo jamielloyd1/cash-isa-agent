@@ -1,0 +1,131 @@
+MODELS FOLDER - SIMPLE EXPLANATION
+==================================
+
+WHAT ARE MODELS?
+
+Models turn raw data into meaningful objects.
+
+They answer questions like:
+  "What is a User?" 
+  "What fields must a User have?"
+  "What types should those fields be?"
+
+Models give your data shape and guarantees.
+
+
+WHY DO MODELS EXIST?
+
+Without models:
+  - You pass dictionaries everywhere (no structure)
+  - You might typo field names (bugs hard to catch)
+  - Bugs show up at runtime, not earlier
+  - LLMs and code hallucinate wrong fields
+
+With models:
+  - Everyone knows the shape of the data
+  - Typos get caught immediately
+  - You get early warnings
+
+
+MODELS IN THIS PROJECT
+
+models/user.py
+  Represents: A real person using the Cash ISA account
+  
+  Example fields:
+    user_id: str              (unique identifier)
+    age: int                  (how old they are)
+    cash_isa_contributions_ytd: float  (how much they've saved this year)
+  
+  Purpose: Define what a User looks like, nothing more
+
+
+models/policy.py
+  Represents: The rules of a Cash ISA account
+  
+  Example fields:
+    annual_allowance: float   (max you can put in per year)
+    minimum_age: int          (youngest person allowed)
+    tax_year_start: date      (when the tax year begins)
+    tax_year_end: date        (when the tax year ends)
+  
+  Purpose: Define what facts about Cash ISA rules exist, nothing more
+
+
+WHAT MODELS DO NOT DO
+
+❌ Fetch data from the database
+❌ Talk to APIs or external systems
+❌ Make decisions (like "is this person eligible?")
+❌ Know about MCP or business logic
+❌ Perform calculations
+
+Models only describe SHAPE and STRUCTURE.
+
+Everything else goes elsewhere.
+
+
+
+
+
+
+
+
+
+
+
+EXAMPLE: user.py (COMPLETE DUMMY)
+==================================
+
+from dataclasses import dataclass
+from datetime import date
+
+@dataclass
+class User:
+    """Represents a real-world user in the Cash ISA system."""
+    
+    user_id: str
+    first_name: str
+    last_name: str
+    date_of_birth: date
+    age: int
+    email: str
+    address: str
+    postcode: str
+    cash_isa_contributions_ytd: float
+    account_opening_date: date
+    
+    def __str__(self):
+        return f"User({self.user_id}: {self.first_name} {self.last_name})"
+
+
+# EXAMPLE USAGE (Don't do this in real code — repositories fetch and create users)
+
+dummy_user = User(
+    user_id="USR-123456",
+    first_name="John",
+    last_name="Smith",
+    date_of_birth=date(1990, 5, 15),
+    age=35,
+    email="john.smith@example.com",
+    address="123 Main Street",
+    postcode="SW1A 1AA",
+    cash_isa_contributions_ytd=5000.00,
+    account_opening_date=date(2024, 1, 1)
+)
+
+print(dummy_user)
+# Output: User(USR-123456: John Smith)
+
+print(f"Contributions this year: £{dummy_user.cash_isa_contributions_ytd}")
+# Output: Contributions this year: £5000.0
+
+
+THAT'S IT.
+
+The User model just:
+  ✓ Holds fields
+  ✓ Has a nice __str__ representation
+  ✓ Nothing else
+
+No database calls, no eligibility logic, no API calls.

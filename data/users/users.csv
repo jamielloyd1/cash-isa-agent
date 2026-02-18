@@ -1,0 +1,26 @@
+user_id,name,age,uk_resident,crown_servant,crown_servant_spouse
+USR001,John Smith,35,true,false,false
+USR002,Jane Doe,28,true,false,true
+USR003,Bob Johnson,55,false,true,false
+USR004,Alice Williams,42,true,false,false
+USR005,Charlie Brown,17,true,false,false
+USR006,Diana Prince,25,false,false,false
+USR007,Edward Norton,35,true,false,false
+USR008,Fiona Apple,30,true,false,false
+USR009,George Lucas,40,false,false,true
+USR010,Hannah Montana,22,true,false,false
+USR011,Ian McKellen,50,true,false,false
+USR012,Julia Roberts,26,false,true,false
+USR013,Kevin Hart,19,true,false,false
+USR014,Lily Singh,31,true,false,false
+USR015,Michael Scott,45,false,true,false
+USR016,Natalie Wood,29,true,false,false
+USR017,Oscar Wilde,52,false,false,true
+USR018,Pam Beesly,27,true,false,false
+USR019,Quentin Blake,38,false,false,false
+USR020,Rachel Green,26,true,false,false
+USR021,Steven Spielberg,55,true,false,false
+USR022,Tilda Swinton,48,true,false,false
+USR023,Uma Thurman,32,false,true,false
+USR024,Vivian Leigh,29,true,false,false
+USR025,William Turner,41,true,false,false

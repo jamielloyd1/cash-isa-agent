@@ -1,0 +1,29 @@
+{
+  "policy_id": "cash_isa_contributions_2026",
+  "policy_version": "1.0",
+  "last_updated": "2026-02-11",
+  "description": "Rules for contributing to a Cash ISA",
+  
+  "general_rules": {
+    "requires_existing_account": true,
+    "requires_eligibility": true
+  },
+  
+  "contribution_limits": {
+    "annual_limit_all_isa_types": 20000,
+    "currency": "GBP",
+    "applies_to": "All ISA accounts combined across all ISA types"
+  },
+  
+  "contribution_frequency": {
+    "max_accounts_contributed_per_tax_year": 1,
+    "rule": "Can only contribute to one cash ISA per tax year",
+    "note": "User can hold multiple cash ISAs with the bank but can only add money to one per tax year"
+  },
+  
+  "tax_year": {
+    "start_date": "06-04",
+    "end_date": "05-04",
+    "cycle": "Annual"
+  }
+}

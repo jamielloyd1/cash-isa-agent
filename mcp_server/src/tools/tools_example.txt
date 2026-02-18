@@ -1,0 +1,103 @@
+# Example 1: Check user eligibility tool
+from src.repositories.user_repository import get_user_by_id
+from src.repositories.policy_repository import get_current_policy
+from src.models.user import User
+from src.models.policy import CashISAPolicy
+from src.services.eligibility_service import is_user_eligible, remaining_allowance
+
+def check_user_eligibility(user_id: str) -> dict:
+    """
+    Tool to check if a user is eligible for a Cash ISA and how much allowance remains.
+
+    Args:
+        user_id (str): The ID of the user to check
+
+    Returns:
+        dict: {
+            "user_id": str,
+            "eligible": bool,
+            "remaining_allowance": float
+        }
+    """
+    # 1️⃣ Fetch raw data using repositories
+    raw_user = get_user_by_id(user_id)           # repository returns dict
+    raw_policy = get_current_policy()           # repository returns dict
+
+    # 2️⃣ Convert raw data into models
+    user = User.from_dict(raw_user)             # model ensures typed object
+    policy = CashISAPolicy.from_dict(raw_policy)  # model ensures typed object
+
+    # 3️⃣ Call service logic
+    eligible = is_user_eligible(user, policy)
+    allowance = remaining_allowance(user, policy)
+
+    # 4️⃣ Return results as dict for MCP agent
+    return {
+        "user_id": user.user_id,
+        "eligible": eligible,
+        "remaining_allowance": allowance
+    }
+
+
+# Example 2: Tool to check if a user can open a new Cash ISA
+from src.services.eligibility_service import can_open_new_isa
+
+def check_can_open_new_isa(user_id: str) -> dict:
+    """
+    Tool to determine if the user can open a new Cash ISA account.
+
+    Args:
+        user_id (str): ID of the user
+
+    Returns:
+        dict: {
+            "user_id": str,
+            "can_open_new_isa": bool
+        }
+    """
+    # Fetch raw data
+    raw_user = get_user_by_id(user_id)
+    raw_policy = get_current_policy()
+
+    # Convert to models
+    user = User.from_dict(raw_user)
+    policy = CashISAPolicy.from_dict(raw_policy)
+
+    # Call service
+    can_open = can_open_new_isa(user, policy)
+
+    return {
+        "user_id": user.user_id,
+        "can_open_new_isa": can_open
+    }
+
+
+# Example 3: Tool to check if user contributions are near the allowance limit
+from src.services.eligibility_service import is_near_allowance_limit
+
+def check_near_allowance(user_id: str, threshold_percent=90) -> dict:
+    """
+    Tool to determine if a user's contributions are near their Cash ISA limit.
+
+    Args:
+        user_id (str): ID of the user
+        threshold_percent (int): % of allowance considered "near limit"
+
+    Returns:
+        dict: {
+            "user_id": str,
+            "near_limit": bool
+        }
+    """
+    raw_user = get_user_by_id(user_id)
+    raw_policy = get_current_policy()
+
+    user = User.from_dict(raw_user)
+    policy = CashISAPolicy.from_dict(raw_policy)
+
+    near_limit = is_near_allowance_limit(user, policy, threshold_percent)
+
+    return {
+        "user_id": user.user_id,
+        "near_limit": near_limit
+    }

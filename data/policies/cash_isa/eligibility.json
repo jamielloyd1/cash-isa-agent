@@ -1,0 +1,37 @@
+{
+  "policy_id": "cash_isa_eligibility_2026",
+  "policy_version": "1.0",
+  "last_updated": "2026-02-11",
+  "description": "Rules for eligibility to open a Cash ISA",
+  
+  "requirements": {
+    "minimum_age": 18,
+    "residency": {
+      "description": "User must meet at least ONE of the following conditions",
+      "conditions": [
+        {
+          "type": "uk_resident",
+          "description": "Must be a UK resident",
+          "field": "Uk_resident",
+          "value": true
+        },
+        {
+          "type": "crown_servant_overseas",
+          "description": "Must be a Crown servant working overseas",
+          "field": "Crown_servant",
+          "value": true
+        },
+        {
+          "type": "spouse_of_crown_servant",
+          "description": "Must be married to a Crown servant working overseas",
+          "field": "Crown_servant_spouse",
+          "value": true
+        }
+      ]
+    },
+    "existing_accounts": {
+      "rule": "Must not have opened a cash ISA in the current tax year",
+      "max_new_accounts_per_tax_year": 1
+    }
+  }
+}
