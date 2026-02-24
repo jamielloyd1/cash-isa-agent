@@ -3,7 +3,7 @@ from pathlib import Path
 
 # Add the 'src' folder to Python's module search path
 sys.path.append(str(Path(__file__).parent / "src"))
-print("sys.path:", sys.path)
+#print("sys.path:", sys.path)
 
 from models.cash_isa_policy import CashISAEligibilityPolicy, CashISAContributionPolicy
 from tools import register_tools
