@@ -1,14 +1,16 @@
 # mcp_server/tests/test_repositories_user_repository.py
+
 import sys
 from pathlib import Path
-import pytest
 from unittest.mock import mock_open, patch
+import pytest
 
 # Add src folder to sys.path so Python can find modules
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from models.user import User
 from repositories.user_repository import UserRepository
+
 
 # Sample CSV content for mocking
 CSV_CONTENT = """user_id,name,age,uk_resident,crown_servant,crown_servant_spouse
@@ -25,6 +27,7 @@ def test_get_all_users(mock_file):
 
     assert len(users) == 3
     assert all(isinstance(user, User) for user in users)
+
     assert users[0].user_id == "USR001"
     assert users[1].name == "Jane Doe"
     assert users[2].crown_servant_spouse is True
@@ -36,6 +39,8 @@ def test_get_user_by_id_exists(mock_file):
     user = repo.get_user_by_id("USR002")
 
     assert user is not None
+    assert isinstance(user, User)
+
     assert user.user_id == "USR002"
     assert user.name == "Jane Doe"
     assert user.age == 28

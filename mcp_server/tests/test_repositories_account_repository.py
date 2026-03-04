@@ -9,6 +9,14 @@ sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from models.account import Account
 from repositories.account_repository import AccountRepository
+import sys
+from pathlib import Path
+
+# Add project root to sys.path
+PROJECT_ROOT = Path(__file__).resolve().parents[3]  # 3 levels up from src/repositories
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from config import USERS_CSV, ACCOUNTS_CSV, TRANSACTIONS_CSV
 
 # Sample CSV content
 CSV_CONTENT = """account_number,user_id,account_type,account_balance,opened_date
@@ -20,7 +28,8 @@ CSV_CONTENT = """account_number,user_id,account_type,account_balance,opened_date
 
 @patch("pathlib.Path.open", new_callable=lambda: mock_open(read_data=CSV_CONTENT))
 def test_get_all_accounts(mock_file):
-    repo = AccountRepository(csv_path="fake_path.csv")
+    # Use the config path to match new repository signature
+    repo = AccountRepository(csv_path=ACCOUNTS_CSV)
     accounts = repo.get_all_accounts()
 
     assert len(accounts) == 3
@@ -31,7 +40,7 @@ def test_get_all_accounts(mock_file):
 
 @patch("pathlib.Path.open", new_callable=lambda: mock_open(read_data=CSV_CONTENT))
 def test_get_account_by_number_exists(mock_file):
-    repo = AccountRepository(csv_path="fake_path.csv")
+    repo = AccountRepository(csv_path=ACCOUNTS_CSV)
     account = repo.get_account_by_number(1002)
 
     assert account is not None
@@ -42,7 +51,7 @@ def test_get_account_by_number_exists(mock_file):
 
 @patch("pathlib.Path.open", new_callable=lambda: mock_open(read_data=CSV_CONTENT))
 def test_get_account_by_number_not_exists(mock_file):
-    repo = AccountRepository(csv_path="fake_path.csv")
+    repo = AccountRepository(csv_path=ACCOUNTS_CSV)
     account = repo.get_account_by_number(9999)
 
     assert account is None
@@ -50,7 +59,7 @@ def test_get_account_by_number_not_exists(mock_file):
 
 @patch("pathlib.Path.open", new_callable=lambda: mock_open(read_data=CSV_CONTENT))
 def test_get_accounts_by_user_id(mock_file):
-    repo = AccountRepository(csv_path="fake_path.csv")
+    repo = AccountRepository(csv_path=ACCOUNTS_CSV)
     accounts_usr1 = repo.get_accounts_by_user_id("USR001")
     accounts_usr2 = repo.get_accounts_by_user_id("USR002")
     accounts_usr3 = repo.get_accounts_by_user_id("NONEXISTENT")
