@@ -23,7 +23,7 @@ class AccountTools:
                     {
                         "account_number": a.account_number,
                         "account_type": a.account_type,
-                        "balance": a.balance,
+                        "account_balance": a.account_balance,
                         "opened_date": a.opened_date,
                     }
                     for a in accounts

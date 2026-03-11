@@ -1,15 +1,19 @@
 # mcp_server/tests/test_repositories_transaction_repository.py
+
 import sys
 from pathlib import Path
 from datetime import date
-import pytest
 from unittest.mock import mock_open, patch
+import pytest
 
-# Add src folder to sys.path so Python can find modules
-sys.path.append(str(Path(__file__).parent.parent / "src"))
+# Add mcp_server/src to sys.path
+CURRENT_DIR = Path(__file__).resolve()
+SRC_PATH = CURRENT_DIR.parent.parent / "src"
+sys.path.insert(0, str(SRC_PATH))
 
 from models.transaction import Transaction
 from repositories.transaction_repository import TransactionRepository
+
 
 # Sample CSV content for mocking
 CSV_CONTENT = """transaction_id,account_number,user_id,amount,date,type
@@ -26,7 +30,7 @@ def test_get_transaction_by_id_exists(mock_file):
     txn = repo.get_transaction_by_id(2)
 
     assert txn is not None
-    assert txn.transaction_id == "2"
+    assert txn.transaction_id == 2
     assert txn.account_number == 1001
     assert txn.user_id == "USR001"
     assert txn.amount == 1000.0
@@ -49,7 +53,7 @@ def test_get_transactions_by_account_number(mock_file):
 
     assert len(txns) == 3
     assert all(isinstance(txn, Transaction) for txn in txns)
-    assert txns[0].transaction_id == "1"
+    assert txns[0].transaction_id == 1
     assert txns[1].type == "contribution"
 
 

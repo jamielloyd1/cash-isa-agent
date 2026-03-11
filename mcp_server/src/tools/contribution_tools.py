@@ -13,7 +13,7 @@ class ContributionTools:
         self.cash_isa_account_service = cash_isa_account_service
         self.cash_isa_contribution_service = cash_isa_contribution_service
 
-    def check_contribution_eligibility(self, user_id: str, account_number: str | None = None) -> Dict[str, Any]:
+    def check_contribution_eligibility(self, user_id: str, account_number: int | None = None) -> Dict[str, Any]:
         """Checks if the user can contribute to a Cash ISA account."""
         try:
             result = self.cash_isa_contribution_service.can_contribute_to_cash_isa(user_id, account_number)
@@ -31,7 +31,7 @@ class ContributionTools:
             }
         
 
-    def check_contribution_amount(self, user_id: str, account_number: str) -> Dict[str, Any]:
+    def check_contribution_amount(self, user_id: str) -> Dict[str, Any]:
         """ checks how much the user can contribute to a Cash ISA account."""
         try:
             contribution_amount = self.cash_isa_contribution_service.contribution_amount_remaining_for_tax_year(user_id)
@@ -59,7 +59,7 @@ class ContributionTools:
                 "error": str(e)
             }
 
-    def contribute_to_cash_isa(self, user_id: str, account_number: str, amount: float) -> Dict[str, Any]:
+    def contribute_to_cash_isa(self, user_id: str, account_number: int, amount: float) -> Dict[str, Any]:
         """Attempts to contribute to a Cash ISA account."""
         try:
             self.cash_isa_contribution_service.make_contribution(user_id, account_number, amount)
